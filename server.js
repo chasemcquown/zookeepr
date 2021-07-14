@@ -10,6 +10,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+// The way it works is that we provide a file path to a location in our application (in this case, the public folder) and instruct the server to make these files static resources. This means that all of our front-end code can now be accessed without having a specific server endpoint created for it
+app.use(express.static('public/zookeepr-public'));
 
 function filterByQuery(query, animalsArray) {
   let personalityTraitsArray = [];
@@ -101,6 +103,23 @@ app.post('/api/animals', (req, res) => {
     const animal = createNewAnimal(req.body, animals);
     res.json(animal);
   }
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/zookeepr-public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/zookeepr-public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/zookeepr-public/zookeepers.html'));
+});
+
+// The * will act as a wildcard, meaning any route that wasn't previously defined will fall under this request and will receive the homepage as the response. **THIS ROUTE SHOULD ALWAYS COME LAST!**
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 app.listen(PORT, () => {
